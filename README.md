@@ -63,3 +63,60 @@ Diagrammatic DevOps Flow Of Shopping Cart
  
   ➔	Second Architecture
     ![image](https://user-images.githubusercontent.com/39376140/40201473-275cd6d8-59ed-11e8-86f5-4d48d4f964fc.png)
+    
+    
+ 1.	go about creating the desired resource in Kubernetes cluster within AWS?
+ 
+    a)	How would you go about determine the size( i.e. # of cpu cores, memory, etc) of the resource
+    
+       Solution: By Analyzing the application (Size of application, How much logs are generated per day/month), what is the traffic of                   site (how many number of users are hitting the website)
+      
+    b)	Which tool and technique would you use for provision
+    
+       Solution: CloudFormation, Terraform, Ansible
+      
+ 2.	verify the individual resource are working
+ 
+    Solution: with the help of Monitoring (CloudWatch, ELK stack....)
+ 3.	verify the static assets can talk to web services
+ 
+    Solution: By passing the request through browser/using test cases
+ 4.	verify the static assets can talk to web services
+ 
+    Solution: By passing the request through browser login Page /using test cases
+ 5.	get the new code and database object changed into the development environment?
+ 
+    a)	Which tool and technique would you use for CI and/orCD.
+    
+       Solution: Jenkins, Ansible
+ 6.	get the new code and database object changed into the Production environment?
+    a)	Which tool and technique would you use for CI and/or CD.
+    
+       Solution: Jenkins, Ansible
+    b)	how would you rollback a bad deployment
+    
+       Solution: in Kubernetes deployment file with the modification of Image version rollback is happening
+
+Bonus Points: 
+  1. How would you implement monitoring and alerting of an application? 
+     
+     a. Which tool and technique would you use for monitoring 
+    
+        Solution: Prometheus, ELK stack, Grafana,
+    
+     b.	Which tool and technique would you use for alerting
+    
+        Solution: Prometheus, ELK stack, Grafana,
+  2.	What security concern would you raise if any 
+  
+        Solution:
+          Instead of exposing all ports in the instance level, open required ports source as with in the subnet/vpc, with specific ip             range. For the services in Kubernetes expose the ports with different number
+  3.	How would scale the application horizontally
+  
+        Solution: with the help of AWS auto scaling the application horizontally is done
+  4.	How would you determine the if resource need to be scale
+  
+        Solution: While monitoring the resource with threshold levels (CPU utilization, Disk Usage) estimate the resource need scaling                     or not
+
+    
+    
