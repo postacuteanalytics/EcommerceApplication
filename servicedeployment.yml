@@ -3,6 +3,9 @@ apiVersion: v1
 metadata:
   name:  admin-deployment
 spec:
+  selector:
+    application: admin-deployment
+    stage: production
   ports:
   - protocol: TCP
     port: 80
