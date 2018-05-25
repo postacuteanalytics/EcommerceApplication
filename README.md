@@ -12,43 +12,62 @@ Software Tool Stack
 Assumptions
   1.	Required one region (US-East-1) for creating environments
   2.	Need 2 VPC (1 VPC required for Dev and Prod Environment each, 1 VPC for Jenkins and Database)
+      - Sounds like Dev and Prod are in the same VPC. The other VPC contains just Jenkins and the application's database?
   3.	2 AWS EC2 instance required for following:
-      1.	Sandbox (Ubuntu 14.04-t2. Large with Jenkins and required plugins) => 1
-      2.	Database (Ubuntu 16.04-t2. micro with disabled delete on termination) => 1
-      3.	Dev Env => (Ubuntu 14.04-t2. micro)
-      4.	Prod Env => (Ubuntu 14.04-t2. micro)
-  4.	For CI we can use Jenkin Server and for provisioning we need AWS CloudFormation  
-  5.	Using Elastic IP in Database Server so if it reboots public IP will remain same.
-  6.	In Jenkins we need following plugins to install
-      1.	SonarQube Scanner for Jenkins
-      2.	Docker – plugin
-      3.	Jenkins-CloudFormation –plugin
-      4.	Publish Over SSH
-      5.	SSH plugin
+  4.	Sandbox (Ubuntu 14.04-t2. Large with Jenkins and required plugins) => 1
+      - Why this AMI (Ubuntu 14.04)?
+  5.	Database (Ubuntu 16.04-t2. micro with disabled delete on termination) => 1
+      - "Disabled delete on termination" meaning what?
+  6.	Dev Env => (Ubuntu 14.04-t2. micro)
+  7.	Prod Env => (Ubuntu 14.04-t2. micro)
+      - Same as above. Why these images?
+  8.	For CI we can use Jenkin Server and for provisioning we need AWS CloudFormation
+      - Why AWS CloudFormation over Terraform?
+  9.	Using Elastic IP in Database Server so if it reboots public IP will remain same.
+      - Did you consider using RDS? If so, why did you choose an EC2 instance instead?
+      - Is the DB in a public or private subnet? Explain.
+  10.	In Jenkins we need following plugins to install
+  11.	SonarQube Scanner for Jenkins
+      - What does SonarQube do and how is it helpful in the CI process?
+  12.	Docker – plugin
+  13.	Jenkins-CloudFormation – plugin
+  14.	Publish Over SSH
+      - Could you explain the purpose of this and how it works?
+  15.	SSH plugin
 
 Deployment Steps:
-  1.	Sandbox (Jenkins with Docker, SonarQube Scanner for Jenkins, Jenkins-CloudFormation-plugin, Publish Over SSH & SSH plugin) instance has been created in AWS Availability Zone -A
+  1.	Sandbox (Jenkins with Docker, SonarQube Scanner for Jenkins, Jenkins-CloudFormation-plugin, Publish Over SSH & SSH plugin) instance has been created in AWS Availability Zone - A
+      - How is the EC2 instance with Jenkins being provisioned? Where does Kubernetes come into play?
   2.	Database Server has been installed in AWS EC2 t2-micro Availability Zone A
+      - Which relational database? Which version? How is it installed on the EC2 instance?
   3.	Development team will develop the 3-tiered wed application with static assets (i.e. html, CSS, jQuery) using AJAX.
   4.	After developing the code, developer will push the code in git-hub and then Jenkin will automate the first jobs.
+      - How is Jenkins triggered?
   5.	In Jenkin initially, code quality (SonarQube) will be checked along with unit test (PHPunit), and if the first job completes successfully then only Development Env (CloudFormation) will be create with the help of orchestration tool manually by running URL of second job.
+      - What happens if the build job fails? Could you go over the Development Env being created portion in a little more detail?
   6.	Now CloudFormation will automate the creation Dev Environment in AWS.
   7.	Database instance will have existing database required by application with tables and exposed on port 5432.
   8.	Application will be dockerize in web container with the help of docker image and expose on port 8080.
   9.	After Deployment Development Team will perform crosscheck the functionality of other modules and if development team find any functionality missing then they will again rebuild the code and push to GitHub
   10.	If all issues are closed, then QA team will test application in Dev environment and if they find no issues then Production Env begin to create in AWS manually by running URL of third job.
+      - Who runs the production environment build?
   11.	Application Container will be packaged with Apache2, php5 dependencies required by application.
+      - How did/would you come up with these package dependencies? 
 
 Alternate Solution Recommendation
   1)	Need apache2 web server to run shopping cart application which is coded in static content using php and ajax.
+      - Explain a little further, please
   2)	For Determine the size of resource we should know how much memory need by application and on which platform it has been written and tools required to run.
+      - How would you determine memory requirements? What kind of applications would require more than others?
   3)	Need EC2 instances size between t2. micro to t2. large in resources , tools and techniques use for provisioning are Jenkin , Docker , Kubernetes , Git , SonarQube , Jira , Unit Testing , Ansible or Cloud Formation  and AWS services with CI CD.  
   4)	We can verify the resources are working in healthy condition with cloud watch.
   5)	Through Kubernetes console also we can check the health of cluster which deployed in AWS
+      - The Kubernetes dashboard?
   6)	We can use load balancer DNS in browser for checking application is running and interacting with webservice.
   7)	If Application is able to return the database value, then it is talking with database.
   8)	Whenever developer push new code to GitHub, Jenkin will automate that code for quality check then create the developer environment.
   9)	For Production Environment, Jenkins will automate the orchestration to create Kubernetes cluster with one master and two minions. In both minions pods will create and in that pods we deploy the application image from docker hub. Handling the minions from the master only.
+      
   10)	If any bad deployment occurs, we can run the Jenkin job again for redeployment.
   11)	 For monitoring and alerting we can use any one of them tool Grafana, Prometheus, ELK Stack, Site 24/7 or AWS CloudWatch.
   12)	We can use dockbeat for transfer the logs for monitoring docker container to ELK stack for monitoring container.
